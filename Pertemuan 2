@@ -1,0 +1,103 @@
+import random
+
+class Robot:
+    def __init__(self, name, hp, attack_power):
+        self.name = name
+        self.hp = hp
+        self.attack_power = attack_power
+        self.defending = False
+        self.armor = 0
+    
+    def attack_enemy(self, enemy, damage):
+        if random.random() > 0.2:  # 80% chance to hit
+            damage = max(0, (damage - enemy.armor)) // 2 if enemy.defending else max(0, (damage - enemy.armor))
+            enemy.hp = max(0, enemy.hp - damage)
+            print(f"{self.name} menyerang {enemy.name} dan menyebabkan {damage} damage!")
+        else:
+            print(f"------------ {self.name} gagal menyerang ----------------")
+        enemy.defending = False  # Reset defense status after enemy's turn
+    
+    def defend(self):
+        self.defending = True
+        print(f"{self.name} bersiap untuk bertahan!")
+    
+    def heal(self, amount):
+        self.hp += amount
+        print(f"{self.name} memulihkan {amount} HP!")
+    
+    def add_armor(self, amount):
+        self.armor += amount
+        print(f"{self.name} meningkatkan armor sebesar {amount}!")
+    
+    def is_defeated(self):
+        return self.hp == 0
+    
+    def taunt(self):
+        taunts = [
+            f"{self.name}: Itu saja yang kau punya? Hahaha!",
+            f"{self.name}: Aku bahkan belum mengeluarkan seluruh kemampuanku!",
+            f"{self.name}: Kau sudah kalah, lebih baik menyerah saja!"
+        ]
+        print(random.choice(taunts))
+
+class Game:
+    def __init__(self, robot1, robot2):
+        self.robot1 = robot1
+        self.robot2 = robot2
+        self.round = 1
+    
+    def play_round(self):
+        print(f"\nRound-{self.round} ==========================================================")
+        print(f"{self.robot1.name} [{self.robot1.hp}|{self.robot1.attack_power}|Armor: {self.robot1.armor}]")
+        print(f"{self.robot2.name} [{self.robot2.hp}|{self.robot2.attack_power}|Armor: {self.robot2.armor}]")
+        
+        for robot, enemy in [(self.robot1, self.robot2), (self.robot2, self.robot1)]:
+            if enemy.is_defeated():
+                return True
+            
+            action = self.get_action(robot)
+            if action == 1:
+                damage = int(input(f"Masukkan kekuatan serangan untuk {robot.name}: "))
+                robot.attack_enemy(enemy, damage)
+            elif action == 2:
+                robot.defend()
+            elif action == 3:
+                heal_amount = int(input(f"Masukkan jumlah HP yang ingin dipulihkan untuk {robot.name}: "))
+                robot.heal(heal_amount)
+            elif action == 4:
+                armor_amount = int(input(f"Masukkan jumlah armor yang ingin ditambahkan untuk {robot.name}: "))
+                robot.add_armor(armor_amount)
+            elif action == 5:
+                print(f"{robot.name} menyerah!")
+                print(f"{enemy.name} menang!")
+                self.declare_winner(enemy)
+                return True
+        
+        self.round += 1
+        return self.robot1.is_defeated() or self.robot2.is_defeated()
+    
+    def get_action(self, robot):
+        while True:
+            try:
+                action = int(input(f"\n1. Attack     2. Defense     3. Heal     4. Armor     5. Giveup\n{robot.name}, pilih aksi: "))
+                if action in [1, 2, 3, 4, 5]:
+                    return action
+            except ValueError:
+                pass
+            print("Pilihan tidak valid, coba lagi.")
+    
+    def start(self):
+        while not self.play_round():
+            pass
+        self.declare_winner(self.robot1 if not self.robot1.is_defeated() else self.robot2)
+    
+    def declare_winner(self, winner):
+        print(f"\n{winner.name} menang!")
+        winner.taunt()
+        print("Game Over!")
+
+if __name__ == "__main__":
+    robot1 = Robot("Atreus", 500, 10)
+    robot2 = Robot("Daedalus", 750, 8)
+    game = Game(robot1, robot2)
+    game.start()
