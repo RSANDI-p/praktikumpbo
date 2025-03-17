@@ -1,0 +1,40 @@
+import math
+
+class Kalkulator:
+    def __init__(self, value):
+        self.value = value
+    
+    def __add__(self, other):
+        return Kalkulator(self.value + other.value)
+    
+    def __sub__(self, other):
+        return Kalkulator(self.value - other.value)
+    
+    def __mul__(self, other):
+        return Kalkulator(self.value * other.value)
+    
+    def __truediv__(self, other):
+        if other.value == 0:
+            raise ValueError("Division by zero is not allowed")
+        return Kalkulator(self.value / other.value)
+    
+    def __pow__(self, other):
+        return Kalkulator(self.value ** other.value)
+    
+    def log(self, base=math.e):
+        if self.value <= 0:
+            raise ValueError("Logarithm is undefined for non-positive values")
+        return Kalkulator(math.log(self.value, base))
+    
+    def __repr__(self):
+        return f"Kalkulator({self.value})"
+
+num1 = Kalkulator(10)
+num2 = Kalkulator(5)
+
+print(num1 + num2) 
+print(num1 - num2) 
+print(num1 * num2) 
+print(num1 / num2)  
+print(num1 ** num2)
+print(num1.log(10)) 
