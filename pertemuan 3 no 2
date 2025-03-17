@@ -1,0 +1,55 @@
+import random
+
+class Father:
+    def __init__(self, blood_type):
+        self.blood_types = self.get_alleles(blood_type)
+    
+    def get_alleles(self, blood_type):
+        blood_map = {
+            "A": ["A", "O"],
+            "B": ["B", "O"],
+            "AB": ["A", "B"],
+            "O": ["O", "O"]
+        }
+        return blood_map.get(blood_type, ["O", "O"])
+
+class Mother:
+    def __init__(self, blood_type):
+        self.blood_types = self.get_alleles(blood_type)
+    
+    def get_alleles(self, blood_type):
+        blood_map = {
+            "A": ["A", "O"],
+            "B": ["B", "O"],
+            "AB": ["A", "B"],
+            "O": ["O", "O"]
+        }
+        return blood_map.get(blood_type, ["O", "O"])
+
+class Child:
+    def __init__(self, father: Father, mother: Mother):
+        allele_from_father = random.choice(father.blood_types)
+        allele_from_mother = random.choice(mother.blood_types)
+        self.blood_type = self.determine_blood_type(allele_from_father, allele_from_mother)
+    
+    def determine_blood_type(self, allele1, allele2):
+        blood_combinations = {
+            ("A", "A"): "A",
+            ("A", "O"): "A",
+            ("O", "A"): "A",
+            ("B", "B"): "B",
+            ("B", "O"): "B",
+            ("O", "B"): "B",
+            ("A", "B"): "AB",
+            ("B", "A"): "AB",
+            ("O", "O"): "O"
+        }
+        return blood_combinations.get((allele1, allele2), "Unknown")
+    
+    def __repr__(self):
+        return f"Child's Blood Type: {self.blood_type}"
+
+father = Father("A")
+mother = Mother("B")
+child = Child(father, mother)
+print(child)
